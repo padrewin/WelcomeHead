@@ -6,6 +6,7 @@ import org.padrewin.welcomehead.Utils.ImageMessage;
 import org.padrewin.welcomehead.Utils.Utils;
 import org.padrewin.welcomehead.WelcomeHead;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -21,6 +22,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.profile.PlayerTextures;
 import org.padrewin.welcomehead.database.DatabaseManager;
 
 public class JoinEvent implements Listener {
@@ -147,6 +149,10 @@ public class JoinEvent implements Listener {
         CompletableFuture<BufferedImage> cachedFuture = dbManager.getCachedAvatar(playerUUID);
         CompletableFuture<BufferedImage> downloadFuture = CompletableFuture.supplyAsync(() -> {
             try {
+                BufferedImage profileAvatar = fetchAvatarFromProfile(player);
+                if (profileAvatar != null) {
+                    return profileAvatar;
+                }
                 return ImageIO.read(new URL("https://minotar.net/avatar/" + playerName + "/128.png?ts=" + System.currentTimeMillis()));
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -230,5 +236,34 @@ public class JoinEvent implements Listener {
                 }
             });
         });
+    }
+
+    private BufferedImage fetchAvatarFromProfile(Player player) throws IOException {
+        PlayerTextures textures = player.getPlayerProfile().getTextures();
+        URL skinUrl = textures.getSkin();
+        if (skinUrl == null) {
+            return null;
+        }
+
+        BufferedImage fullSkin = ImageIO.read(skinUrl);
+        if (fullSkin == null) {
+            return null;
+        }
+        return extractHeadFromSkin(fullSkin);
+    }
+
+    private BufferedImage extractHeadFromSkin(BufferedImage fullSkin) {
+        if (fullSkin.getWidth() < 64 || fullSkin.getHeight() < 32) {
+            return null;
+        }
+
+        BufferedImage avatar = new BufferedImage(8, 8, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = avatar.createGraphics();
+        g.drawImage(fullSkin.getSubimage(8, 8, 8, 8), 0, 0, null);
+        if (fullSkin.getWidth() >= 64 && fullSkin.getHeight() >= 64) {
+            g.drawImage(fullSkin.getSubimage(40, 8, 8, 8), 0, 0, null);
+        }
+        g.dispose();
+        return avatar;
     }
 }
