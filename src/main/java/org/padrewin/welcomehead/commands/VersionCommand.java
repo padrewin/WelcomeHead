@@ -5,9 +5,11 @@ import java.util.List;
 import org.padrewin.welcomehead.WelcomeHead;
 import org.padrewin.welcomehead.manager.CommandManager;
 import org.padrewin.welcomehead.manager.LocaleManager;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -43,12 +45,14 @@ public class VersionCommand extends BaseCommand {
         if (sender instanceof Player) {
             Player player = (Player) sender;
 
-            TextComponent baseMessage = new TextComponent(baseColor + "GitHub: ");
-            TextComponent clickableText = new TextComponent(ChatColor.RED + "" + ChatColor.UNDERLINE + "click here");
-            clickableText.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/Cold-Development/WelcomeHead"));
-            baseMessage.addExtra(clickableText);
+            Component clickableText = Component.text("click here")
+                    .color(NamedTextColor.RED)
+                    .decorate(TextDecoration.UNDERLINED)
+                    .clickEvent(ClickEvent.openUrl("https://github.com/Cold-Development/WelcomeHead"));
+            Component baseMessage = LegacyComponentSerializer.legacySection().deserialize(baseColor + "GitHub: ")
+                    .append(clickableText);
 
-            player.spigot().sendMessage(baseMessage);
+            player.sendMessage(baseMessage);
 
         } else if (sender instanceof ConsoleCommandSender) {
             String ansiRed = "\u001B[31m";
