@@ -1,5 +1,6 @@
 # WelcomeHead
-![Static Badge](https://img.shields.io/badge/Version-v1.0-brightgreen?logo=files&logoColor=ffffff&color=799aca)
+![GitHub Release](https://img.shields.io/github/v/release/cold-development/welcomehead?display_name=tag&style=for-the-badge&color=green)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/cold-development/welcomehead/total?style=for-the-badge&color=green)
 
 WelcomeHead is a Minecraft plugin that shows player's head with a welcome message on server join.
 
