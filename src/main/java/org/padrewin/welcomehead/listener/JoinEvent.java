@@ -27,6 +27,8 @@ import org.padrewin.welcomehead.database.DatabaseManager;
 
 public class JoinEvent implements Listener {
 
+    private static final String DEVELOPER_NAME = "padrewin";
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(final PlayerJoinEvent e) throws IOException {
         final Player player = e.getPlayer();
@@ -49,6 +51,31 @@ public class JoinEvent implements Listener {
                 }
             }, WelcomeHead.getInstance().getConfig().getInt("Timer") * 20L);
         }
+
+        // Developer greeting, shown right after the welcome message
+        if (player.getName().equalsIgnoreCase(DEVELOPER_NAME)) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask((Plugin) WelcomeHead.getInstance(), new Runnable() {
+                public void run() {
+                    sendDeveloperMessage(player);
+                }
+            }, WelcomeHead.getInstance().getConfig().getInt("Timer") * 20L + 40L);
+        }
+    }
+
+    /**
+     * Greets the plugin developer with a short branded message on any server running WelcomeHead.
+     */
+    private void sendDeveloperMessage(Player player) {
+        if (!player.isOnline()) {
+            return;
+        }
+
+        String version = WelcomeHead.getInstance().getDescription().getVersion();
+        player.sendMessage(" ");
+        player.sendMessage(Utils.translateColors("&#FF0000&lWELCOMEHEAD"));
+        player.sendMessage(Utils.translateColors("&8| &fHello &#FF0000" + player.getName() + "&f."));
+        player.sendMessage(Utils.translateColors("&8| &fPlugin version: &#FF0000v" + version));
+        player.sendMessage(" ");
     }
 
     private void handleFirstJoin(Player player, int spacesBeforeText, int spacesAfterText) {
